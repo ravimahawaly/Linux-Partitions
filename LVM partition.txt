@@ -1,4 +1,4 @@
-How to remove /home partition and create new one
+How to remove /home partition and create new one (LVM-Based)
 ===========================================================
 mkdir home_backup
 rsync -avh /home/ home_backup/
@@ -20,7 +20,7 @@ systemctl daemon-reload
 findmnt --verify
 pvs
 ################# Add a disk #################
-Creare a partition from this disk
+Create a partition from this disk
 
 fdisk /dev/sdb  => n => enter to default => enter to default => t => 8e or 30 => p => w
 n => create new partition
@@ -28,7 +28,7 @@ t => change type of partition
 8e => MBR based partition
 30 or LVM => GPT based partition
 p => print
-w => save
+w => write & save
 lsblk
 df -h
 mount | grep /dev/sdb1
@@ -62,5 +62,6 @@ ls
 rsync -avh * /home/
 cd /home
 ls
-su - ravi
+su - user
+
 ls
