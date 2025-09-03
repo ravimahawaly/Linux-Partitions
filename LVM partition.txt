@@ -1,0 +1,66 @@
+How to remove /home partition and create new one
+===========================================================
+mkdir home_backup
+rsync -avh /home/ home_backup/
+pvs
+vgs
+lvs
+umount /home
+lvs
+lvchange -an /dev/rhel/home
+lvs
+df -h
+lsblk
+lvremove /dev/rhel/home
+lsblk
+vgs
+lvs
+vim /etc/fstab   ==> remove /home entry
+systemctl daemon-reload
+findmnt --verify
+pvs
+################# Add a disk #################
+Creare a partition from this disk
+
+fdisk /dev/sdb  => n => enter to default => enter to default => t => 8e or 30 => p => w
+n => create new partition
+t => change type of partition
+8e => MBR based partition
+30 or LVM => GPT based partition
+p => print
+w => save
+lsblk
+df -h
+mount | grep /dev/sdb1
+pvcreate /dev/sdb1
+pvs
+vgs
+vgextend rhel /dev/sdb1
+vgs
+lvs
+lvcreate -L 380G -n oradata rhel
+lvs
+mkfs.xfs /dev/rhel/oradata  ==> OR ==> mkfs.ext4 /dev/rhel/oradata
+mkdir /oradata
+mount /dev/rhel/oradata /oradata
+lvs
+lsblk
+blkid /dev/rhel/oradata   ==> copu uuid of this new partition
+vim /etc/fstab   ==> make entry here
+findmnt --verify  ==> to verify any errors in partition table
+systemctl daemon-reload
+findmnt --verify
+umount /oradata
+mount -a
+
+###################################################################
+Now restoring /home data
+
+ls /   ==> home already present there
+cd /root/home_backup
+ls
+rsync -avh * /home/
+cd /home
+ls
+su - ravi
+ls
